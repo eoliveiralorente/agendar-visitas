@@ -31,3 +31,11 @@ patches:
       - op: replace
         path: /data/ALLOWED_EMAILS
         value: ""
+  # Disco do PostgreSQL: o cluster não tem StorageClass padrão, usa o Cinder
+  - target:
+      kind: StatefulSet
+      name: postgres
+    patch: |-
+      - op: add
+        path: /spec/volumeClaimTemplates/0/spec/storageClassName
+        value: cinder
