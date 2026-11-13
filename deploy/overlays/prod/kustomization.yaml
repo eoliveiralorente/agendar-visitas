@@ -6,7 +6,7 @@ resources:
   - ingress.yaml
 images:
   - name: ghcr.io/eoliveiralorente/agendar-visitas
-    newTag: 5134bb67192f6331f712ac88cbd3c275017e6967
+    newTag: cf88cf622c0a4d02961801f90c69dff1dc1947f0
 patches:
   - target:
       kind: ConfigMap
