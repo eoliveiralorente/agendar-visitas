@@ -1,0 +1,16 @@
+# Emissor de certificados Let's Encrypt usando o Traefik do cluster.
+# Aplicar uma vez (depois de instalar o cert-manager):
+#   kubectl apply -f deploy/cert-manager/clusterissuer.yaml
+apiVersion: cert-manager.io/v1
+kind: ClusterIssuer
+metadata:
+  name: letsencrypt-prod
+spec:
+  acme:
+    server: https://acme-v02.api.letsencrypt.org/directory
+    privateKeySecretRef:
+      name: letsencrypt-prod-key
+    solvers:
+      - http01:
+          ingress:
+            ingressClassName: traefik
