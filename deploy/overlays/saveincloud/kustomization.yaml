@@ -28,7 +28,7 @@ patches:
         value: https://200-229-75-14.sslip.io
       - op: replace
         path: /data/ALLOWED_DOMAINS
-        value: ""
+        value: saveincloud.com
       - op: replace
         path: /data/ALLOWED_EMAILS
         value: ""
