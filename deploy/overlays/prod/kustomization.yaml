@@ -4,7 +4,7 @@ resources:
   - ../../base
   - ingress.yaml
 images:
-  - name: ghcr.io/eoliveiralorente/agenda-visitas
+  - name: ghcr.io/eoliveiralorente/agendar-visitas
     newTag: latest
 patches:
   - target:
