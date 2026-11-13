@@ -1,0 +1,33 @@
+# Configuração para o Kubernetes da SaveInCloud (plataforma Virtuozzo/Jelastic),
+# aplicada direto com: kubectl apply -k deploy/overlays/saveincloud
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+  - ../../base
+  - ingress.yaml
+images:
+  - name: ghcr.io/eoliveiralorente/agenda-visitas
+    newTag: latest
+patches:
+  # Sempre baixa a imagem mais nova ao reiniciar (usamos a tag "latest")
+  - target:
+      kind: Deployment
+      name: agenda-visitas
+    patch: |-
+      - op: replace
+        path: /spec/template/spec/containers/0/imagePullPolicy
+        value: Always
+  # >>> EDITE AQUI: endereço do app e quem pode entrar <<<
+  - target:
+      kind: ConfigMap
+      name: agenda-visitas-config
+    patch: |-
+      - op: replace
+        path: /data/BASE_URL
+        value: https://SEU-AMBIENTE.SEU-DOMINIO-SAVEINCLOUD
+      - op: replace
+        path: /data/ALLOWED_DOMAINS
+        value: ""
+      - op: replace
+        path: /data/ALLOWED_EMAILS
+        value: ""

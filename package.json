@@ -1,0 +1,20 @@
+{
+  "name": "agenda-visitas",
+  "version": "1.0.0",
+  "description": "Agenda de Visitas — leads da pré-vendas, visitas do comercial e CS, integração com Google Calendar",
+  "main": "server/index.js",
+  "private": true,
+  "license": "UNLICENSED",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "start": "node server/index.js",
+    "dev": "NODE_ENV=development DEV_LOGIN=true node server/index.js",
+    "import": "node server/import.js",
+    "test": "node --test test/*.test.js"
+  },
+  "dependencies": {
+    "pg": "^8.13.1"
+  }
+}

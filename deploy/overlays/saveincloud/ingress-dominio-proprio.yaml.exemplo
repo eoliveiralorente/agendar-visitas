@@ -1,0 +1,26 @@
+# Opção B: domínio próprio (ex.: visitas.suaempresa.com.br) com certificado Let's Encrypt.
+# Pré-requisitos: IP público no worker + add-on "Certificate Manager" instalado no Control Plane.
+# Para usar: renomeie para ingress.yaml (substituindo o da opção A) e troque o domínio.
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: agenda-visitas
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+spec:
+  ingressClassName: nginx-cert
+  tls:
+    - hosts:
+        - visitas.suaempresa.com.br
+      secretName: agenda-visitas-tls
+  rules:
+    - host: visitas.suaempresa.com.br
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: agenda-visitas
+                port:
+                  name: http
