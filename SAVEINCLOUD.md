@@ -189,4 +189,4 @@ kubectl -n agenda-visitas exec -i statefulset/postgres -- psql -U agenda agenda 
 | Google: `invalid_client` | Segredo com `provisorio` ou ID errado | `patch` do passo 6 |
 | Google: `redirect_uri_mismatch` | Redirect URI diferente do `BASE_URL` | Os dois precisam ser idênticos |
 | Google: "app não concluiu a verificação" (403) | Público External sem o usuário em Test users | Adicione o e-mail ou mude para Internal |
-| App: "Sua conta não tem acesso" | E-mail fora de `ALLOWED_DOMAINS`/`ALLOWED_EMAILS` | Ajuste, `kubectl apply -k …` e `rollout restart` |
+| App: "Sua conta não tem acesso" | E-mail fora de `ALLOWED_DOMAINS`/`ALLOWED_EMAILS` | Ajuste, `kubectl apply -k …` e `rollout restart.` |
