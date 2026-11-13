@@ -30,6 +30,7 @@ const SEC_HEADERS = {
     'font-src https://fonts.gstatic.com',
     "img-src 'self' data: https://*.googleusercontent.com",
     "connect-src 'self'",
+    'frame-src https://www.google.com https://maps.google.com',
     "frame-ancestors 'none'",
     "base-uri 'self'",
     "form-action 'self'",

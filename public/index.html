@@ -38,6 +38,7 @@ button.card:hover{border-color:#C4B5FD}
 .btn.primary:hover{background:var(--blue-d)}
 .btn:disabled{opacity:.55;cursor:not-allowed}
 .btn.full{width:100%}
+a.btn{text-decoration:none}.mapprev{position:relative;display:block;height:180px;border-radius:10px;overflow:hidden;border:1px solid var(--line);background:#EDE9F7}.mapprev iframe{width:100%;height:100%;border:0;pointer-events:none;display:block}.mapcta{position:absolute;right:8px;bottom:8px;display:inline-flex;align-items:center;gap:6px;background:#fff;color:var(--ink);font-size:13px;font-weight:600;padding:6px 10px;border-radius:999px;box-shadow:0 1px 4px rgba(26,21,48,.18)}.mapprev:hover .mapcta{background:var(--blue);color:#fff}a.btn:not(.primary){color:var(--ink)}
 .btn.sm{height:38px;padding:0 12px;font-size:14px;border-radius:10px}
 .icon-btn{width:44px;height:44px;border-radius:12px;border:0;background:#F3F4F6;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0}
 .field{display:flex;flex-direction:column;gap:6px}
@@ -163,6 +164,8 @@ function oppPill(o){if(!o||!o.nivel||o.nivel==='nenhuma')return '';var c=o.nivel
 function climaPill(c){if(!c)return '';var cl=c==='positivo'?'ok':c==='negativo'?'bad':'';return '<span class="pill '+cl+'">'+esc(c.charAt(0).toUpperCase()+c.slice(1))+'</span>';}
 
 var IC = {
+  pin:'<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 22s7-6.2 7-12a7 7 0 0 0-14 0c0 5.8 7 12 7 12z"/><circle cx="12" cy="10" r="2.5"/></svg>',
+  route:'<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 11l18-8-8 18-2-8-8-2z"/></svg>',
   back:'<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 18l-6-6 6-6"/></svg>',
   plus:'<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>',
   cal:'<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>',
@@ -340,7 +343,7 @@ function organizar(vid){
 /* ---------- navigation ---------- */
 function go(view,p){
   if(S.listening&&S.caps.dictation){S.caps.dictation.stop().catch(function(){});}
-  S.view=view;S.p=p||{};window.scrollTo(0,0);render();
+  S.view=view;S.p=p||{};S.mapPrev={};window.scrollTo(0,0);render();
 }
 
 /* ---------- views ---------- */
@@ -429,7 +432,7 @@ function vNova(){
    '<div class="field"><label for="f-ini">Início</label><input id="f-ini" type="time" name="hora" required value="'+esc(dv(k,'hora','09:00'))+'"></div></div>'+
    '<div class="field"><label for="f-dur">Duração</label><select id="f-dur" name="dur">'+[['30','30 min'],['60','1 hora'],['90','1h30'],['120','2 horas']].map(function(o){return '<option value="'+o[0]+'"'+(dv(k,'dur','60')===o[0]?' selected':'')+'>'+o[1]+'</option>';}).join('')+'</select></div>'+
    respSelect(k,d.respId)+
-   '<div class="field"><label for="f-loc">Local</label><input id="f-loc" name="local" placeholder="'+esc(c&&c.endereco?c.endereco:'Endereço ou link da reunião')+'" value="'+esc(dv(k,'local'))+'"></div>'+
+   '<div class="field"><label for="f-loc">Local</label><input id="f-loc" name="local" placeholder="'+esc(c&&c.endereco?c.endereco:'Endereço ou link da reunião')+'" value="'+esc(dv(k,'local'))+'"></div>'+mapsCheckBtn('f-loc','')+
    '<div class="field"><label for="f-obj">Objetivo da visita</label><textarea id="f-obj" name="objetivo" rows="2" placeholder="Ex.: apresentar proposta, revisar resultados">'+esc(dv(k,'objetivo'))+'</textarea></div>'+
    '<div class="card" style="padding:4px 14px"><label class="toggle"><span style="display:flex;flex-direction:column;gap:2px"><span style="font-weight:600">Criar no Google Calendar</span><span class="muted">'+'Cria o evento na sua agenda do Google'+'</span></span><input type="checkbox" name="google"'+(d.google&&S.caps.mcp?' checked':'')+(S.caps.mcp?'':' disabled')+'></label>'+inviteToggle(k,d.respId)+'</div>'+
    '<button class="btn primary full" type="submit"'+(S.busy.nova?' disabled':'')+'>'+(S.busy.nova?'Agendando…':'Agendar visita')+'</button></form>';
@@ -475,7 +478,7 @@ function vLeadForm(){
    '<div class="grid2">'+inp('contato','Contato','Com quem falou')+inp('cargo','Cargo','')+'</div>'+
    '<div class="grid2">'+inp('telefone','Telefone / WhatsApp','','tel')+inp('email','E-mail do cliente','','email')+'</div>'+
    '<div class="grid2">'+inp('cidade','Cidade','')+inp('segmento','Segmento','')+'</div>'+
-   inp('endereco','Endereço da visita','Rua, número, bairro')+
+   inp('endereco','Endereço da visita','Rua, número, bairro')+mapsCheckBtn('l-endereco','l-cidade')+
    '<div class="field"><label for="l-int">O que foi conversado / interesse do cliente</label><textarea id="l-int" name="interesse" rows="3" placeholder="Ex.: quer conhecer o sistema de estoque, tem 3 filiais, falar com o dono">'+esc(dv(k,'interesse'))+'</textarea></div>'+
    '<h2 style="margin-top:6px">Encaminhamento</h2>'+
    (vs.length?'<div class="field"><label for="l-vend">Vendedor responsável</label><select id="l-vend" name="vendedorId"><option value="">Escolha…</option>'+vs.map(function(m){return '<option value="'+esc(m.id)+'"'+(m.id===dv(k,'vendedorId')?' selected':'')+'>'+esc(m.nome)+'</option>';}).join('')+'</select></div>'
@@ -499,6 +502,7 @@ function vLead(){
    '<div class="card"><h2>Contato</h2><span style="font-weight:600">'+esc(L.contato||'—')+(L.cargo?' · '+esc(L.cargo):'')+'</span>'+
    (L.telefone?'<span class="muted">'+esc(L.telefone)+'</span>':'')+(L.email?'<span class="muted">'+esc(L.email)+'</span>':'')+
    '<span class="muted">'+esc([L.endereco,L.cidade].filter(Boolean).join(' · '))+'</span></div>';
+  h+=mapsBox(L.endereco,L.cidade);
   if(L.interesse)h+='<div class="card"><h2>O que foi conversado</h2><span style="white-space:pre-line;line-height:1.45">'+esc(L.interesse)+'</span></div>';
   if(L.preferencia)h+='<div class="card"><h2>Data combinada / preferida</h2><span style="font-weight:600">'+esc(fmtDate(L.preferencia))+(L.preferenciaHora?' às '+esc(L.preferenciaHora):'')+'</span></div>';
   if(L.status==='descartado'&&L.motivo)h+='<div class="card"><h2>Motivo do descarte</h2><span>'+esc(L.motivo)+'</span></div>';
@@ -616,7 +620,7 @@ function vClienteForm(){
    '<form data-form="'+esc(k)+'" data-submit="saveCliente" data-id="'+esc(id)+'" style="display:flex;flex-direction:column;gap:14px">'+
    '<h2>Identificação</h2>'+inp('nome','Nome da empresa *','Ex.: Distribuidora Pioneira')+
    '<div class="grid2">'+inp('segmento','Segmento','Ex.: Distribuição')+inp('cidade','Cidade','')+'</div>'+
-   inp('endereco','Endereço','Rua, número, bairro')+
+   inp('endereco','Endereço','Rua, número, bairro')+mapsCheckBtn('c-endereco','c-cidade')+
    '<div class="field"><span class="lbl">Status</span><div class="chips">'+['prospect','ativo','em risco','inativo'].map(function(s){return '<button type="button" class="chip'+(d.status===s?' on':'')+'" data-a="setDraft" data-k="'+esc(k)+'" data-n="status" data-v="'+s+'">'+s+'</button>';}).join('')+'</div></div>'+
    '<h2 style="margin-top:6px">Contato principal</h2>'+
    '<div class="grid2">'+inp('contato','Nome','')+inp('cargo','Cargo','')+'</div>'+
@@ -647,6 +651,7 @@ function vCliente(){
    '<div class="kpi"><span class="muted">CS</span><span style="font-weight:600">'+esc(c.respCS||'—')+'</span></div></div>'+
    '<div class="row" style="gap:10px"><button class="btn primary" style="flex:2" data-a="novaPara" data-id="'+esc(c.id)+'">Agendar visita</button><button class="btn" style="flex:1" data-a="nav" data-to="clienteForm" data-id="'+esc(c.id)+'">Editar</button></div>';
   if(c.valoriza)h+='<div class="card"><h2>Pontos fortes</h2><span style="white-space:pre-line;line-height:1.45">'+esc(c.valoriza)+'</span></div>';
+  h+=mapsBox(c.endereco,c.cidade);
   if(c.contato)h+='<div class="card"><h2>Contato</h2><span style="font-weight:600">'+esc(c.contato)+(c.cargo?' · '+esc(c.cargo):'')+'</span>'+
     (c.telefone?'<span class="muted">'+esc(c.telefone)+'</span>':'')+(c.email?'<span class="muted">'+esc(c.email)+'</span>':'')+(c.perfilContato?'<span style="white-space:pre-line;font-size:14px">'+esc(c.perfilContato)+'</span>':'')+'</div>';
   if(c.evitar)h+='<div class="card" style="background:var(--bad-l);border-color:#FECACA"><h2 style="color:var(--bad)">Evitar</h2><span style="color:#7F1D1D;white-space:pre-line">'+esc(c.evitar)+'</span></div>';
@@ -675,6 +680,7 @@ function vPre(){
    (c.status?'<span class="pill" style="background:rgba(255,255,255,.18);color:#fff">'+esc(c.status)+'</span>':'')+
    '<span class="pill" style="background:rgba(255,255,255,.18);color:#fff">'+(u?'Última visita há '+dias+' dias':'Primeira visita')+'</span></div></header><main>';
   if(v.objetivo)h+='<div class="card"><h2>Objetivo de hoje</h2><span>'+esc(v.objetivo)+'</span></div>';
+  h+=mapsBox(v.local||c.endereco,c.cidade);
   h+='<div class="card"><h2>Pontos fortes</h2>'+(c.valoriza||(u&&u.registro&&u.registro.pontosFortes)?
      '<ul class="clean">'+(c.valoriza?'<li style="white-space:pre-line">'+esc(c.valoriza)+'</li>':'')+(u&&u.registro&&u.registro.pontosFortes?'<li>'+esc(u.registro.pontosFortes)+'</li>':'')+'</ul>':'<span class="muted">Ainda não registrado. Preencha na ficha do cliente.</span>')+'</div>';
   if(u&&u.registro&&u.registro.compromissos)h+='<div class="card" style="border-color:#FED7AA"><h2 style="color:var(--warn)">Pendências da última visita</h2><span style="line-height:1.45">'+esc(u.registro.compromissos)+'</span><span class="muted">'+esc(fmtDate(u.inicio))+' · '+esc(respNome(u))+'</span></div>';
@@ -687,6 +693,19 @@ function vPre(){
   h+='<button class="btn full sm" data-a="delVisita" data-id="'+esc(v.id)+'" style="color:var(--bad);margin-top:4px">Cancelar esta visita</button>';
   return h+'</main>';
 }
+/* ---------- Google Maps ---------- */
+function mapsQuery(end,cid){end=(end||'').trim();cid=(cid||'').trim();if(/^https?:\/\//i.test(end))return '';if(!end&&!cid)return '';return [end,(cid&&end.toLowerCase().indexOf(cid.toLowerCase())<0)?cid:''].filter(Boolean).join(', ');}
+function mapsUrl(q){return 'https://www.google.com/maps/search/?api=1&query='+encodeURIComponent(q);}
+function rotaUrl(q){return 'https://www.google.com/maps/dir/?api=1&destination='+encodeURIComponent(q);}
+function embedUrl(q){return 'https://www.google.com/maps?q='+encodeURIComponent(q)+'&z=13&hl=pt-BR&output=embed';}
+function mapPreview(q){return '<a class="mapprev" href="'+esc(mapsUrl(q))+'" target="_blank" rel="noopener" aria-label="Abrir '+esc(q)+' no Google Maps">'+
+  '<iframe src="'+esc(embedUrl(q))+'" loading="lazy" tabindex="-1" title="Mapa de '+esc(q)+'" referrerpolicy="no-referrer-when-downgrade"></iframe>'+
+  '<span class="mapcta">'+IC.pin+' Abrir no Google Maps</span></a>';}
+function mapsBox(end,cid){var q=mapsQuery(end,cid);if(!q)return '';
+  return '<div class="card"><h2>Localização</h2>'+mapPreview(q)+'<span style="line-height:1.4">'+esc(q)+'</span><div class="row" style="gap:10px">'+
+   '<a class="btn sm primary" style="flex:1" href="'+esc(rotaUrl(q))+'" target="_blank" rel="noopener">'+IC.route+' Como chegar</a></div></div>';}
+function mapsCheckBtn(endId,cidId){var q=(S.mapPrev||{})[endId];
+  return '<button type="button" class="btn sm" style="align-self:flex-start;margin-top:-6px" data-a="mapsCheck" data-end="'+endId+'" data-cid="'+(cidId||'')+'">'+IC.pin+(q?' Atualizar mapa':' Conferir no mapa')+'</button>'+(q?mapPreview(q):'');}
 function googleBox(v,c){
   if(v.google&&v.google.ok)return '<div class="banner ok">No Google Calendar ✓'+(v.google.link?' · <a href="'+esc(v.google.link)+'" target="_blank" rel="noopener">abrir evento</a>':'')+'</div>';
   var busy=S.busy['g'+v.id];
@@ -954,6 +973,10 @@ document.addEventListener('change',function(e){
 document.addEventListener('click',function(e){
   var b=e.target.closest('[data-a]');if(!b||b.dataset.a==='search')return;
   var a=b.dataset.a,id=b.dataset.id;
+  if(a==='mapsCheck'){var ee=document.getElementById(b.dataset.end),ce=b.dataset.cid?document.getElementById(b.dataset.cid):null;
+    var ev=ee?(ee.value||(b.dataset.end==='f-loc'&&ee.placeholder!=='Endereço ou link da reunião'?ee.placeholder:'')):'';
+    var mq=mapsQuery(ev,ce?ce.value:'');
+    if(!mq){toast('Preencha o endereço primeiro.');return;}S.mapPrev=S.mapPrev||{};S.mapPrev[b.dataset.end]=mq;render();return;}
   if(a==='nav'){
     var to=b.dataset.to;
     if(to==='nova'){delete S.drafts.nova;go('nova',{});}
