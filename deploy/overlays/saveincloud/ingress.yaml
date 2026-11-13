@@ -1,14 +1,18 @@
-# Opção A (mais simples): usa o endereço do próprio ambiente na SaveInCloud,
-# que já tem HTTPS pelo balanceador da plataforma. Sem host e sem TLS aqui.
-# Confira o nome da classe com: kubectl get ingressclass   (troque "nginx" se for outro)
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: agenda-visitas
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-prod
 spec:
   ingressClassName: traefik
+  tls:
+    - hosts:
+        - 200-229-75-14.sslip.io
+      secretName: agenda-visitas-tls
   rules:
-    - http:
+    - host: 200-229-75-14.sslip.io
+      http:
         paths:
           - path: /
             pathType: Prefix

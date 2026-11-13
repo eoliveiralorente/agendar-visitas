@@ -25,7 +25,7 @@ patches:
     patch: |-
       - op: replace
         path: /data/BASE_URL
-        value: https://SEU-AMBIENTE.SEU-DOMINIO-SAVEINCLOUD
+        value: https://200-229-75-14.sslip.io
       - op: replace
         path: /data/ALLOWED_DOMAINS
         value: ""
