@@ -1,0 +1,14 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: agenda-visitas
+labels:
+  - pairs:
+      app.kubernetes.io/part-of: agenda-visitas
+    includeSelectors: false
+resources:
+  - namespace.yaml
+  - configmap.yaml
+  - postgres.yaml
+  - deployment.yaml
+  - service.yaml
+  - pdb.yaml

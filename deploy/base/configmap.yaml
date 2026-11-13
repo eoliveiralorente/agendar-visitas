@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: agenda-visitas-config
+data:
+  NODE_ENV: "production"
+  PORT: "8080"
+  # Sobrescrito no overlay com a URL pública real
+  BASE_URL: "https://visitas.example.com"
+  COOKIE_SECURE: "true"
+  DATABASE_SSL: "false"
+  # Quem pode entrar (separe por vírgula)
+  ALLOWED_DOMAINS: ""
+  ALLOWED_EMAILS: ""
+  TZ_EVENTS: "America/Sao_Paulo"
